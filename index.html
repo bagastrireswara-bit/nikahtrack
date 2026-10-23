@@ -82,7 +82,7 @@ input,select{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid 
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 .card h2{font-size:15px;margin-bottom:4px}.card .cta{margin-top:14px}.hint{font-size:12px;color:var(--mut);margin-top:10px}
 </style>
-<script src="://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 <main class="app" id="app"></main>
@@ -168,7 +168,7 @@ async function simpanTarget(){const a=+document.getElementById('t-a').value;if(!
   const {error}=await sb.from('dompet').update({nama:document.getElementById('t-n').value.trim()||'Pernikahan Kami',target:a,tgl_nikah:document.getElementById('t-d').value||S.tglNikah}).eq('id',dompet);
   if(error){toast('Gagal menyimpan');return}close_();await muat();toast('Target diperbarui')}
 const SUPABASE_URL='https://cascrbyfvbvlhkhgezcb.supabase.co';
-const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNhc2NyYnlmdmJ2bGhraGdlemNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjExMzEsImV4cCI6MjEwODI5NzEzMX0.WbB8SgWna3vc_mI1NWc933eLNn3QrIhJxVjE_ouVLYs';
+const SUPABASE_ANON_KEY='ISI_DENGAN_ANON_PUBLIC_KEY';
 function authView(){const logo='<div class="logo"><i>💍</i>NikahTrack</div>';
   if(!user)return logo+`<div class="top"><div><h1>Catat Tabungan Nikah, Jadi Lebih Mudah</h1><p>Masuk agar data tersimpan online dan bisa dibuka dari HP mana pun</p></div></div><div class="card"><label for="a-e">Email</label><input id="a-e" type="email" autocomplete="email"><label for="a-p">Kata sandi (minimal 6 karakter)</label><input id="a-p" type="password" autocomplete="current-password"><div class="row"><button class="ghost" onclick="auth('up')">Daftar</button><button class="cta" style="margin:0" onclick="auth('in')">Masuk</button></div></div>`;
   return logo+`<div class="card"><h2>Buat dompet pernikahan</h2><label for="d-n">Nama acara</label><input id="d-n" value="Pernikahan Kami"><label for="d-a">Target dana (Rp)</label><input id="d-a" type="number" min="1" placeholder="80000000"><label for="d-d">Tanggal pernikahan</label><input id="d-d" type="date"><button class="cta" onclick="buat()">Buat dompet</button></div><div class="card"><h2>Gabung dompet pasangan</h2><label for="d-k">Kode dompet</label><input id="d-k" placeholder="Contoh: A1B2C3D4"><button class="cta" onclick="gabung()">Gabung dompet</button></div><button class="ghost" onclick="keluar()">Keluar</button>`}
@@ -187,10 +187,12 @@ async function buat(){const a=+document.getElementById('d-a').value,d=document.g
 async function gabung(){const k=document.getElementById('d-k').value.trim();if(!k){toast('Isi kode dompet');return}
   const {error}=await sb.rpc('gabung_dompet',{p_kode:k});if(error){toast(error.message);return}await muat()}
 async function keluar(){await sb.auth.signOut();user=null;dompet=null;tab='home';render()}
-if(SUPABASE_URL.startsWith('ISI')){document.getElementById('app').innerHTML='<div class="card"><h2>Konfigurasi belum diisi</h2><p class="hint">Isi SUPABASE_URL dan SUPABASE_ANON_KEY di index.html. Lihat README.md.</p></div>'}
-else{sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-  sb.auth.getSession().then(async({data})=>{user=data.session?data.session.user:null;if(user)await muat();else render()});
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&dompet)muat()})}
+function tampilError(m){document.getElementById('app').innerHTML='<div class="card"><h2>Terjadi kesalahan</h2><p class="hint">'+esc(m)+'</p><p class="hint">Periksa SUPABASE_URL dan SUPABASE_ANON_KEY di index.html.</p></div>'}
+window.addEventListener('error',e=>{if(!document.getElementById('app').innerHTML.trim())tampilError(e.message)});
+if(SUPABASE_URL.startsWith('ISI')||SUPABASE_ANON_KEY.startsWith('ISI')){document.getElementById('app').innerHTML='<div class="card"><h2>Konfigurasi belum diisi</h2><p class="hint">Isi SUPABASE_ANON_KEY di index.html dengan kunci anon public dari Supabase.</p></div>'}
+else{try{sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  sb.auth.getSession().then(async({data})=>{user=data.session?data.session.user:null;if(user)await muat();else render()}).catch(e=>tampilError(e.message));
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&dompet)muat()})}catch(e){tampilError(e.message)}}
 </script>
 </body>
 </html>
