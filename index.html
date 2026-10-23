@@ -167,7 +167,7 @@ function openTarget(){open_(`<h3>Target pernikahan</h3><label for="t-n">Nama aca
 async function simpanTarget(){const a=+document.getElementById('t-a').value;if(!(a>0)){toast('Target harus lebih dari 0');return}
   const {error}=await sb.from('dompet').update({nama:document.getElementById('t-n').value.trim()||'Pernikahan Kami',target:a,tgl_nikah:document.getElementById('t-d').value||S.tglNikah}).eq('id',dompet);
   if(error){toast('Gagal menyimpan');return}close_();await muat();toast('Target diperbarui')}
-const SUPABASE_URL='https://cascrbyfvbvlhkhgezcb.supabase.co/rest/v1/';
+const SUPABASE_URL='https://cascrbyfvbvlhkhgezcb.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNhc2NyYnlmdmJ2bGhraGdlemNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MjExMzEsImV4cCI6MjEwODI5NzEzMX0.WbB8SgWna3vc_mI1NWc933eLNn3QrIhJxVjE_ouVLYs';
 function authView(){const logo='<div class="logo"><i>💍</i>NikahTrack</div>';
   if(!user)return logo+`<div class="top"><div><h1>Catat Tabungan Nikah, Jadi Lebih Mudah</h1><p>Masuk agar data tersimpan online dan bisa dibuka dari HP mana pun</p></div></div><div class="card"><label for="a-e">Email</label><input id="a-e" type="email" autocomplete="email"><label for="a-p">Kata sandi (minimal 6 karakter)</label><input id="a-p" type="password" autocomplete="current-password"><div class="row"><button class="ghost" onclick="auth('up')">Daftar</button><button class="cta" style="margin:0" onclick="auth('in')">Masuk</button></div></div>`;
